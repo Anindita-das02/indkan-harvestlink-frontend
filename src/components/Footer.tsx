@@ -70,7 +70,7 @@ export default function Footer() {
               <a href="#advantages">Quality Standards</a>
             </li>
             <li>
-              <a href="/#contact">Trade Enquiry Desk</a>
+              <Link to="/enquiry">Trade Enquiry Desk</Link>
             </li>
           </ul>
         </div>
@@ -100,12 +100,12 @@ export default function Footer() {
             </div>
 
             <div className="footer-trade-action">
-              <a
-                href="mailto:info@indkan.com?subject=Export%20Trade%20Quote%20Request"
+              <Link
+                to="/enquiry"
                 className="btn btn-gold footer-cta-btn"
               >
                 Request Trade Quote <ArrowUpRight size={14} />
-              </a>
+              </Link>
             </div>
           </div>
         </div>

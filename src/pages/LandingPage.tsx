@@ -435,12 +435,12 @@ export default function LandingPage() {
               </p>
 
               <div className="enquiry-btn-group">
-                <a
-                  href="mailto:info@indkan.com?subject=Wholesale%20Commodity%20Trade%20Enquiry"
+                <Link
+                  to="/enquiry"
                   className="btn btn-gold"
                 >
                   Submit Trade Enquiry <ArrowRight size={18} />
-                </a>
+                </Link>
                 <a
                   href="mailto:info@indkan.com"
                   className="btn btn-outline-white"

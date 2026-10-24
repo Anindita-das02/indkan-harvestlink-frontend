@@ -310,12 +310,12 @@ export default function Products() {
             </p>
           </div>
 
-          <a
+          <Link
+            to="/enquiry"
             className="btn btn-gold"
-            href="mailto:info@indkan.com?subject=Bulk%20Commodity%20Wholesale%20Enquiry"
           >
             Send Bulk Enquiry <ArrowRight size={18} />
-          </a>
+          </Link>
         </div>
       </section>
       </main>

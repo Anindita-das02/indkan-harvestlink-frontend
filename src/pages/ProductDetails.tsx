@@ -242,13 +242,13 @@ export default function ProductDetails() {
                       </div>
                     </div>
 
-                    <a
-                      href={`mailto:info@indkan.com?subject=Wholesale%20FOB%20Quote%20Request%20-%20${encodeURIComponent(product.name)}%20(${product.product_code || "INDKAN"})`}
+                    <Link
+                      to={`/enquiry?id=${product.id}&product=${encodeURIComponent(product.name)}`}
                       className="btn btn-gold details-primary-quote-btn"
                     >
                       <Mail size={18} />
-                      Request Formal B2B Quotation →
-                    </a>
+                      Get Price Quote →
+                    </Link>
 
                     <div className="quotation-guarantee-note">
                       <span>✓ Official Batch COA provided</span>
@@ -322,11 +322,11 @@ export default function ProductDetails() {
                         </div>
                         <div className="spec-table-row">
                           <span className="spec-table-label">Moisture Content</span>
-                          <span className="spec-table-val">Under 12% Max (Preserves freshness & storage stability)</span>
+                          <span className="spec-table-val">10% – 12% Max (Supplier standard; exact batch COA confirmed per contract)</span>
                         </div>
                         <div className="spec-table-row">
                           <span className="spec-table-label">Foreign Matter / Purity</span>
-                          <span className="spec-table-val">99.5% Min Optical Sortex Purity</span>
+                          <span className="spec-table-val">99.0% – 99.5% Min Optical Sortex Purity (As per buyer contractual specification)</span>
                         </div>
                         <div className="spec-table-row">
                           <span className="spec-table-label">Storage Conditions</span>
@@ -334,6 +334,16 @@ export default function ProductDetails() {
                             {product.storage_instructions || "Store in cool, dry ventilated warehouse below 25°C"}
                           </span>
                         </div>
+                      </div>
+
+                      <div className="spec-disclosure-box">
+                        <div className="spec-disclosure-title">
+                          <ShieldCheck size={16} />
+                          <span>Supplier Quality & Specification Verification Notice</span>
+                        </div>
+                        <p style={{ margin: 0 }}>
+                          Physical parameters (moisture %, optical sortex purity, foreign matter tolerance) are confirmed based on verified supplier test certificates and official pre-dispatch Certificate of Analysis (COA) issued by accredited inspection agencies (e.g. SGS / Bureau Veritas) per shipment contract. Baseline demo figures represent standard export grade targets.
+                        </p>
                       </div>
                     </div>
                   )}
@@ -424,12 +434,12 @@ export default function ProductDetails() {
                   <p>Our trade desk assists with mixed container consolidations, custom packaging artwork, and CIF freight quotations.</p>
                 </div>
                 <div className="details-assistance-right">
-                  <a
-                    href="mailto:info@indkan.com?subject=Custom%20Trade%20Inquiry%20-%20INDKAN"
+                  <Link
+                    to={`/enquiry?id=${product.id}&product=${encodeURIComponent(product.name)}`}
                     className="btn btn-gold"
                   >
                     Contact Trade Desk <ArrowRight size={17} />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </>

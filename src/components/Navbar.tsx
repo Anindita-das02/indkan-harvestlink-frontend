@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Mail } from "lucide-react";
+import { Menu, X, Mail, Clock } from "lucide-react";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -74,14 +74,23 @@ export default function Navbar() {
           >
             About Us
           </a>
-          <a
-            className="btn btn-primary nav-cta"
-            href={isHomePage ? "#contact" : "/#contact"}
+          <Link
+            className={`nav-link ${location.pathname === "/track" ? "active" : ""}`}
+            to="/track"
+            onClick={closeMenu}
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+          >
+            <Clock size={15} />
+            Track Enquiry
+          </Link>
+          <Link
+            className={`btn btn-primary nav-cta ${location.pathname === "/enquiry" ? "active" : ""}`}
+            to="/enquiry"
             onClick={closeMenu}
           >
             <Mail size={17} />
             Send Enquiry
-          </a>
+          </Link>
         </nav>
       </div>
     </header>
