@@ -31,8 +31,24 @@ type Product = {
   minimum_order_quantity?: string | number;
   moq_unit?: string;
   availability_status?: string;
+  stock_quantity?: number | string;
+  stock_unit?: string;
   packaging_options?: string;
   image_url?: string;
+};
+
+const formatStockBadge = (status?: string) => {
+  const s = (status || "in_stock").toLowerCase();
+  if (s === "low_stock") {
+    return { label: "Low Stock", className: "stock-low_stock" };
+  }
+  if (s === "out_of_stock" || s === "unavailable") {
+    return { label: "Out of Stock", className: "stock-out_of_stock" };
+  }
+  if (s === "on_request") {
+    return { label: "On Request", className: "stock-on_request" };
+  }
+  return { label: "In Stock", className: "stock-in_stock" };
 };
 
 // Fallback image for graceful error handling
@@ -121,13 +137,19 @@ export default function Products() {
         {/* Sleek, centered & balanced Hero header */}
         <section className="products-hero">
           <div className="container products-hero-content">
+            <div className="hero-badge" style={{ margin: "0 auto 12px auto", width: "fit-content" }}>
+              <PackageCheck size={14} /> B2B Export Catalogue
+            </div>
             <h1>
-              Quality Commodities for <span>Global Buyers.</span>
+              Explore Our <span>Products</span>
             </h1>
 
-            <p>
-              Sortex-cleaned pulses, export-grade lentils, and premium Indian spices
-              aggregated directly from verified agrarian networks for international wholesale supply.
+            <p style={{ maxWidth: "800px", margin: "0 auto 14px auto" }}>
+              Explore our range of agricultural products, including pulses, spices, and other products available for bulk trade. Each product page provides relevant details such as origin, quality specifications, minimum order quantity, and packaging options where available.
+            </p>
+
+            <p style={{ maxWidth: "800px", margin: "0 auto 20px auto", fontSize: "14px", opacity: 0.85 }}>
+              Product availability may vary depending on stock levels, season, and supplier confirmation. Buyers can select their required products and submit an enquiry to receive further information and a formal quotation from our team.
             </p>
 
             <div className="products-hero-badges">
@@ -243,6 +265,14 @@ export default function Products() {
                       <span className="product-category-badge">
                         {product.category_name || "Commodity"}
                       </span>
+                      {(() => {
+                        const badge = formatStockBadge(product.availability_status);
+                        return (
+                          <span className={`product-stock-badge ${badge.className}`}>
+                            {badge.label}
+                          </span>
+                        );
+                      })()}
                     </div>
                   </Link>
 

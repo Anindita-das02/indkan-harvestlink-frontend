@@ -363,8 +363,16 @@ export default function EnquiryPage() {
             {/* Header */}
             <div className="enquiry-modal-header">
               <div className="enquiry-modal-header-text">
-                <h2>Get a Price Quote</h2>
-                <p>Submit your bulk commodity requirements to receive wholesale rates & specifications.</p>
+                <h2>Request a Formal B2B Quotation</h2>
+                <p style={{ marginTop: "6px", fontSize: "15px", color: "#F8F7F2", fontWeight: 500 }}>
+                  Looking to source agricultural products in bulk? Submit your requirements through our quotation request form.
+                </p>
+                <p style={{ marginTop: "8px", fontSize: "13.5px", color: "#A8BCA1", lineHeight: 1.5 }}>
+                  Please provide your company details, business contact information, required products, quantities, preferred packaging, and destination country. Our team will review the information and contact you regarding availability, pricing, and applicable export terms.
+                </p>
+                <div style={{ marginTop: "12px", padding: "8px 12px", background: "rgba(201, 164, 81, 0.15)", border: "1px solid rgba(201, 164, 81, 0.3)", borderRadius: "6px", fontSize: "12.5px", color: "#F4DFC8" }}>
+                  ℹ️ <strong>Notice:</strong> Submitting an enquiry does not constitute a confirmed order. Orders are subject to quotation acceptance and final commercial agreement.
+                </div>
               </div>
             </div>
 

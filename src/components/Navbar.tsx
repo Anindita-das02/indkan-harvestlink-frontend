@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Mail, Clock } from "lucide-react";
+import { Menu, X, Clock } from "lucide-react";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,57 +39,28 @@ export default function Navbar() {
           className={`nav-links ${menuOpen ? "nav-links-open" : ""}`}
           aria-label="Main navigation"
         >
-          <a
+          <Link
             className={`nav-link ${isHomePage ? "active" : ""}`}
-            href={isHomePage ? "#home" : "/"}
+            to="/"
             onClick={closeMenu}
           >
             Home
-          </a>
+          </Link>
           <Link
             className={`nav-link ${location.pathname.startsWith("/product") ? "active" : ""}`}
-            to="/product"
+            to="/products"
             onClick={closeMenu}
           >
             Products
           </Link>
-          <a
-            className="nav-link"
-            href={isHomePage ? "#why-indkan" : "/#why-indkan"}
-            onClick={closeMenu}
-          >
-            Why Us
-          </a>
-          <a
-            className="nav-link"
-            href={isHomePage ? "#workflow" : "/#workflow"}
-            onClick={closeMenu}
-          >
-            Process
-          </a>
-          <a
-            className="nav-link"
-            href={isHomePage ? "#about" : "/#about"}
-            onClick={closeMenu}
-          >
-            About Us
-          </a>
           <Link
-            className={`nav-link ${location.pathname === "/track" ? "active" : ""}`}
-            to="/track"
+            className={`nav-link ${location.pathname.startsWith("/track") ? "active" : ""}`}
+            to="/track-enquiry"
             onClick={closeMenu}
             style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
           >
             <Clock size={15} />
             Track Enquiry
-          </Link>
-          <Link
-            className={`btn btn-primary nav-cta ${location.pathname === "/enquiry" ? "active" : ""}`}
-            to="/enquiry"
-            onClick={closeMenu}
-          >
-            <Mail size={17} />
-            Send Enquiry
           </Link>
         </nav>
       </div>

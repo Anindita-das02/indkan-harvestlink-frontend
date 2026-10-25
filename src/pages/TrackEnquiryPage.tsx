@@ -57,6 +57,14 @@ type EnquiryData = {
   step: number;
   created_at: string;
   items: EnquiryItem[];
+  history?: Array<{
+    id: number;
+    old_status: string;
+    new_status: string;
+    note: string;
+    changed_by: string;
+    created_at: string;
+  }>;
 };
 
 export default function TrackEnquiryPage() {
@@ -240,12 +248,16 @@ export default function TrackEnquiryPage() {
               <div className="track-header-icon">
                 <ShieldCheck size={26} />
               </div>
-              <h2>Track Your Quotation Request</h2>
-              <p>
-                {step === "dashboard"
-                  ? "Live status & KYC updates for your commercial export quotation."
-                  : "No account required. Simply enter your Enquiry Reference ID and Secret PIN."}
+              <h2>Track Your Enquiry</h2>
+              <p style={{ marginTop: "8px", fontSize: "14.5px", color: "#F8F7F2", fontWeight: 500, lineHeight: 1.6 }}>
+                Stay informed about the progress of your product enquiry. Enter the Enquiry Reference ID and the secure PIN provided after submission to view the latest available status.
               </p>
+              <p style={{ marginTop: "6px", fontSize: "13px", color: "#A8BCA1", lineHeight: 1.5 }}>
+                Your enquiry may move through stages such as Submitted, Under Review, Quotation Sent, Accepted, Rejected, or Closed. Status updates depend on the review and actions taken by our team.
+              </p>
+              <div style={{ marginTop: "12px", padding: "8px 14px", background: "rgba(201, 164, 81, 0.15)", border: "1px solid rgba(201, 164, 81, 0.3)", borderRadius: "6px", fontSize: "12.5px", color: "#F4DFC8" }}>
+                🔒 <em>Please keep your reference details secure. If you need assistance with your enquiry, contact our support team.</em>
+              </div>
             </div>
 
             {/* Body */}
@@ -541,39 +553,82 @@ export default function TrackEnquiryPage() {
                       </span>
                     </div>
 
-                    {/* Stepper Timeline */}
-                    <div className="track-timeline-stepper">
-                      <div className={`timeline-step ${activeEnquiry.step >= 1 ? (activeEnquiry.step === 1 ? "current" : "completed") : ""}`}>
-                        <div className="timeline-step-circle">
-                          {activeEnquiry.step > 1 ? "✓" : "1"}
-                        </div>
-                        <span className="timeline-step-label">Request Received</span>
+                    {/* Stepper Timeline: Phase 1 Commercial & Order Confirmation */}
+                    <div style={{ marginBottom: "8px" }}>
+                      <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#8FA496", marginBottom: "8px", fontWeight: 700 }}>
+                        Stage 1: Commercial Quotation & Order Review
                       </div>
-
-                      <div className={`timeline-step ${activeEnquiry.step >= 2 ? (activeEnquiry.step === 2 ? "current" : "completed") : ""}`}>
-                        <div className="timeline-step-circle">
-                          {activeEnquiry.step > 2 ? "✓" : "2"}
+                      <div className="track-timeline-stepper">
+                        <div className={`timeline-step ${activeEnquiry.step >= 1 ? (activeEnquiry.step === 1 ? "current" : "completed") : ""}`}>
+                          <div className="timeline-step-circle">
+                            {activeEnquiry.step > 1 ? "✓" : "1"}
+                          </div>
+                          <span className="timeline-step-label">Request Received</span>
                         </div>
-                        <span className="timeline-step-label">Trade KYC Review</span>
-                      </div>
 
-                      <div className={`timeline-step ${activeEnquiry.step >= 3 ? (activeEnquiry.step === 3 ? "current" : "completed") : ""}`}>
-                        <div className="timeline-step-circle">
-                          {activeEnquiry.step > 3 ? "✓" : "3"}
+                        <div className={`timeline-step ${activeEnquiry.step >= 2 ? (activeEnquiry.step === 2 ? "current" : "completed") : ""}`}>
+                          <div className="timeline-step-circle">
+                            {activeEnquiry.step > 2 ? "✓" : "2"}
+                          </div>
+                          <span className="timeline-step-label">Trade KYC Review</span>
                         </div>
-                        <span className="timeline-step-label">Quote & Rate Sheet</span>
-                      </div>
 
-                      <div className={`timeline-step ${activeEnquiry.step >= 4 ? (activeEnquiry.step === 4 ? "current" : "completed") : ""}`}>
-                        <div className="timeline-step-circle">
-                          {activeEnquiry.step >= 4 ? "✓" : "4"}
+                        <div className={`timeline-step ${activeEnquiry.step >= 3 ? (activeEnquiry.step === 3 ? "current" : "completed") : ""}`}>
+                          <div className="timeline-step-circle">
+                            {activeEnquiry.step > 3 ? "✓" : "3"}
+                          </div>
+                          <span className="timeline-step-label">Quotation Sent</span>
                         </div>
-                        <span className="timeline-step-label">Order Finalized</span>
+
+                        <div className={`timeline-step ${activeEnquiry.step >= 4 ? (activeEnquiry.step === 4 ? "current" : "completed") : ""}`}>
+                          <div className="timeline-step-circle">
+                            {activeEnquiry.step >= 4 ? "✓" : "4"}
+                          </div>
+                          <span className="timeline-step-label">Order Confirmed</span>
+                        </div>
                       </div>
                     </div>
 
+                    {/* Stepper Timeline: Phase 2 Shipment Progress (Active once Order is Confirmed) */}
+                    {activeEnquiry.step >= 4 && (
+                      <div style={{ marginTop: "18px", padding: "14px 16px", background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.25)", borderRadius: "10px" }}>
+                        <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#34D399", marginBottom: "8px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
+                          <CheckCircle2 size={13} color="#10B981" /> Stage 2: Shipment & Export Fulfillment Progress
+                        </div>
+                        <div className="track-timeline-stepper" style={{ margin: "10px 0 6px" }}>
+                          <div className={`timeline-step ${activeEnquiry.step >= 5 ? (activeEnquiry.step === 5 ? "current" : "completed") : (activeEnquiry.step === 4 ? "pending" : "")}`}>
+                            <div className="timeline-step-circle" style={{ borderColor: activeEnquiry.step === 5 ? "#8B5CF6" : undefined, background: activeEnquiry.step === 5 ? "#8B5CF6" : undefined, color: activeEnquiry.step === 5 ? "#FFF" : undefined }}>
+                              {activeEnquiry.step > 5 ? "✓" : "5"}
+                            </div>
+                            <span className="timeline-step-label">Processing</span>
+                          </div>
+
+                          <div className={`timeline-step ${activeEnquiry.step >= 6 ? (activeEnquiry.step === 6 ? "current" : "completed") : ""}`}>
+                            <div className="timeline-step-circle" style={{ borderColor: activeEnquiry.step === 6 ? "#F59E0B" : undefined, background: activeEnquiry.step === 6 ? "#F59E0B" : undefined, color: activeEnquiry.step === 6 ? "#FFF" : undefined }}>
+                              {activeEnquiry.step > 6 ? "✓" : "6"}
+                            </div>
+                            <span className="timeline-step-label">Packed</span>
+                          </div>
+
+                          <div className={`timeline-step ${activeEnquiry.step >= 7 ? (activeEnquiry.step === 7 ? "current" : "completed") : ""}`}>
+                            <div className="timeline-step-circle" style={{ borderColor: activeEnquiry.step === 7 ? "#06B6D4" : undefined, background: activeEnquiry.step === 7 ? "#06B6D4" : undefined, color: activeEnquiry.step === 7 ? "#FFF" : undefined }}>
+                              {activeEnquiry.step > 7 ? "✓" : "7"}
+                            </div>
+                            <span className="timeline-step-label">Shipped</span>
+                          </div>
+
+                          <div className={`timeline-step ${activeEnquiry.step >= 8 ? (activeEnquiry.step === 8 ? "current" : "completed") : ""}`}>
+                            <div className="timeline-step-circle" style={{ borderColor: activeEnquiry.step === 8 ? "#059669" : undefined, background: activeEnquiry.step === 8 ? "#059669" : undefined, color: activeEnquiry.step === 8 ? "#FFF" : undefined }}>
+                              {activeEnquiry.step >= 8 ? "✓" : "8"}
+                            </div>
+                            <span className="timeline-step-label">Delivered</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Details Grid */}
-                    <div className="track-details-grid">
+                    <div className="track-details-grid" style={{ marginTop: "18px" }}>
                       <div className="track-detail-item">
                         <span className="track-detail-label">Commodity & Volume</span>
                         <span className="track-detail-val">
@@ -619,6 +674,49 @@ export default function TrackEnquiryPage() {
                       <span>
                         Official wholesale rate sheet and verified batch Certificate of Analysis (COA) will be dispatched to <strong>{activeEnquiry.email}</strong> once B2B trade KYC is approved.
                       </span>
+                    </div>
+
+                    {/* Tracking History Timeline Audit Log */}
+                    <div style={{ marginTop: "22px", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "18px" }}>
+                      <h4 style={{ margin: "0 0 12px", fontSize: "13px", color: "#E5C378", display: "flex", alignItems: "center", gap: "6px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                        <Clock size={15} /> Tracking History & Status Updates
+                      </h4>
+
+                      {activeEnquiry.history && activeEnquiry.history.length > 0 ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                          {activeEnquiry.history.map((h, i) => (
+                            <div
+                              key={i}
+                              style={{
+                                padding: "10px 14px",
+                                background: "rgba(255, 255, 255, 0.02)",
+                                borderLeft: "3px solid #C9A451",
+                                borderRadius: "0 6px 6px 0",
+                                fontSize: "12.5px"
+                              }}
+                            >
+                              <div style={{ display: "flex", justifyContent: "space-between", color: "#8FA496", fontSize: "11.5px", marginBottom: "4px" }}>
+                                <span>Updated by <strong>{h.changed_by}</strong></span>
+                                <span>{h.created_at}</span>
+                              </div>
+                              <div style={{ color: "#E5C378", fontWeight: 700 }}>
+                                {h.old_status ? `${h.old_status.replace("_", " ").toUpperCase()} → ` : ""}
+                                {h.new_status.replace("_", " ").toUpperCase()}
+                              </div>
+                              {h.note && (
+                                <div style={{ color: "#CBDCD1", marginTop: "4px", fontSize: "12px", lineHeight: 1.4 }}>
+                                  {h.note}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: "12.5px", color: "#8FA496", padding: "10px 14px", background: "rgba(255, 255, 255, 0.02)", borderRadius: "6px" }}>
+                          <Clock size={12} style={{ display: "inline", marginRight: "4px" }} />
+                          Request successfully submitted on {activeEnquiry.created_at}. Awaiting admin review.
+                        </div>
+                      )}
                     </div>
 
                   </div>

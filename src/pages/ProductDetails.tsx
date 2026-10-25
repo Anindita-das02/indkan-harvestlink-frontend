@@ -35,6 +35,8 @@ type ProductDetailsData = {
   minimum_order_quantity?: string | number;
   moq_unit?: string;
   availability_status?: string;
+  stock_quantity?: number | string;
+  stock_unit?: string;
   export_information?: string;
   packaging_options?: string;
   image_url?: string;
@@ -111,11 +113,14 @@ export default function ProductDetails() {
     }
   };
 
-  const formatAvailability = (status?: string) => {
-    if (!status || status === "on_request") return "Available for Export Quotations";
-    if (status === "available") return "In Stock • Ready for Loading";
-    if (status === "unavailable") return "Seasonal • Inquire for Next Harvest";
-    return status;
+  const formatAvailability = (status?: string, qty?: number | string, unit?: string) => {
+    const s = (status || "in_stock").toLowerCase();
+    const qtyText = qty && Number(qty) > 0 ? ` (${Number(qty).toLocaleString()} ${unit || "Metric Ton"})` : "";
+    if (s === "in_stock" || s === "available") return `In Stock • Ready for Loading${qtyText}`;
+    if (s === "low_stock") return `Low Stock • Limited Allotment${qtyText}`;
+    if (s === "out_of_stock" || s === "unavailable") return "Out of Stock • Inquire for Next Harvest";
+    if (s === "on_request") return "On Request • Custom Sourcing";
+    return status ? status.replace(/_/g, " ").toUpperCase() : "In Stock";
   };
 
   const formatMoq = (moq?: string | number | null, unit?: string | null) => {
@@ -189,9 +194,9 @@ export default function ProductDetails() {
                     <span className="details-category-eyebrow">
                       {product.category_name || "AGRICULTURAL COMMODITY"}
                     </span>
-                    <span className="details-live-status">
+                    <span className={`details-live-status status-${(product.availability_status || "in_stock").toLowerCase()}`}>
                       <span className="status-dot" />
-                      {formatAvailability(product.availability_status)}
+                      {formatAvailability(product.availability_status, product.stock_quantity, product.stock_unit)}
                     </span>
                   </div>
 
