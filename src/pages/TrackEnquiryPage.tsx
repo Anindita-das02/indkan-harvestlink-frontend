@@ -8,7 +8,6 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Clock, 
-  FileText, 
   MapPin, 
   Building2, 
   LogOut,
@@ -19,12 +18,13 @@ import {
   EyeOff,
   Lock,
   Hash,
-  Check
+  Download
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import apiService from "../services/apiService";
 import { API_ENDPOINTS } from "../config/api";
+import { exportSingleEnquiryPDF } from "../utils/pdfExport";
 
 type EnquiryItem = {
   id?: number;
@@ -386,6 +386,16 @@ export default function TrackEnquiryPage() {
                         onClick={() => fetchEnquiry(activeEnquiry.reference_id, secretPin)}
                       >
                         <RefreshCw size={13} style={{ marginRight: "4px" }} /> Refresh
+                      </button>
+
+                      <button
+                        type="button"
+                        className="track-logout-btn"
+                        style={{ color: "#C9A451", borderColor: "rgba(201, 164, 81, 0.4)", fontWeight: 600 }}
+                        title="Download official PDF Dossier"
+                        onClick={() => exportSingleEnquiryPDF(activeEnquiry)}
+                      >
+                        <Download size={13} style={{ marginRight: "4px" }} /> Download PDF
                       </button>
 
                       <button

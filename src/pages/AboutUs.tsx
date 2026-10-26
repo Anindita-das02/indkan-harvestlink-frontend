@@ -1,7 +1,7 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
-import { ShieldCheck, ArrowRight, Globe, Award, Sparkles, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, ArrowRight, Globe, Award, Sparkles } from "lucide-react";
 
 export default function AboutUs() {
   return (

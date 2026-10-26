@@ -1,7 +1,7 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
-import { Ship, ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
+import { Ship, ArrowRight } from "lucide-react";
 
 export default function ExportProcess() {
   const steps = [

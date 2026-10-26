@@ -4,6 +4,7 @@ import {
   Loader2,
   AlertCircle,
   ArrowRight,
+  ArrowLeft,
   CheckCircle2,
   ShieldCheck,
   Ship,
@@ -137,6 +138,14 @@ export default function ProductDetails() {
       <main className="details-main-content">
         <div className="container details-container">
 
+          {/* Top Navigation Action Bar */}
+          <div className="details-top-nav">
+            <Link to="/products" className="details-back-link">
+              <ArrowLeft size={16} />
+              <span>Back to Products</span>
+            </Link>
+          </div>
+
           {loading ? (
             <div className="details-loading-state">
               <Loader2
@@ -155,7 +164,7 @@ export default function ProductDetails() {
               <AlertCircle size={40} style={{ color: "#d9534f", marginBottom: "16px" }} />
               <h3>Unable to Load Product</h3>
               <p>{error || "The requested product was not found in our export registry."}</p>
-              <Link to="/product" className="btn btn-primary" style={{ marginTop: "16px" }}>
+              <Link to="/products" className="btn btn-primary" style={{ marginTop: "16px" }}>
                 Back to Catalogue
               </Link>
             </div>

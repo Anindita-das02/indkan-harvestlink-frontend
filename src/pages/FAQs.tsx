@@ -2,7 +2,7 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
-import { HelpCircle, ChevronDown, ChevronUp, ArrowRight, MessageSquare } from "lucide-react";
+import { HelpCircle, ChevronDown, ChevronUp, ArrowRight } from "lucide-react";
 
 export default function FAQs() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);

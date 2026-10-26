@@ -27,13 +27,13 @@ import {
   Mail,
   RefreshCw,
   Upload,
-  ChevronLeft,
-  ChevronRight,
-  X
+  X,
+  Download
 } from "lucide-react";
 import apiService from "../services/apiService";
 import { API_ENDPOINTS } from "../config/api";
 import Footer from "../components/Footer";
+import { exportSingleEnquiryPDF, exportMultipleEnquiriesPDF } from "../utils/pdfExport";
 import "../styles/admin.css";
 
 type ProductItem = {
@@ -141,7 +141,6 @@ export default function AdminPage() {
   // Navigation Section
   const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "categories" | "enquiries">("dashboard");
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Global Data State
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -602,6 +601,47 @@ export default function AdminPage() {
 
     return matchesQ && matchesStatus;
   });
+
+  // Batch Enquiry Selection State for PDF Export
+  const [selectedEnquiryIds, setSelectedEnquiryIds] = useState<number[]>([]);
+
+  const toggleSelectEnquiry = (id: number) => {
+    setSelectedEnquiryIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAllEnquiries = () => {
+    if (selectedEnquiryIds.length === filteredEnquiries.length) {
+      setSelectedEnquiryIds([]);
+    } else {
+      setSelectedEnquiryIds(filteredEnquiries.map((e) => e.id));
+    }
+  };
+
+  const handleExportSelectedPDF = () => {
+    const selected = filteredEnquiries.filter((e) => selectedEnquiryIds.includes(e.id));
+    if (selected.length === 0) {
+      triggerFeedback("Please select at least one enquiry to export.", "error");
+      return;
+    }
+    if (selected.length === 1) {
+      exportSingleEnquiryPDF(selected[0]);
+      triggerFeedback(`Exported Dossier PDF for Enquiry ${selected[0].reference_id}`);
+    } else {
+      exportMultipleEnquiriesPDF(selected);
+      triggerFeedback(`Exported batch PDF containing ${selected.length} enquiries.`);
+    }
+  };
+
+  const handleExportAllVisiblePDF = () => {
+    if (filteredEnquiries.length === 0) {
+      triggerFeedback("No enquiries available to export.", "error");
+      return;
+    }
+    exportMultipleEnquiriesPDF(filteredEnquiries);
+    triggerFeedback(`Exported batch master PDF for all ${filteredEnquiries.length} visible enquiries.`);
+  };
 
   // =========================================================================
   // VIEW: ADMIN LOGIN SCREEN (If not authenticated)
@@ -1244,14 +1284,14 @@ export default function AdminPage() {
           {/* TAB: BUYER ENQUIRIES */}
           {activeTab === "enquiries" && (
             <div className="admin-card">
-              <div className="admin-card-header">
+              <div className="admin-card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
                   <h3>
                     <FileText size={18} color="#C9A451" /> Commercial Export Quotations ({filteredEnquiries.length})
                   </h3>
 
                   {/* Search */}
-                  <div style={{ position: "relative", minWidth: "260px" }}>
+                  <div style={{ position: "relative", minWidth: "240px" }}>
                     <Search size={15} style={{ position: "absolute", left: "10px", top: "11px", color: "var(--admin-text-muted)" }} />
                     <input
                       type="text"
@@ -1295,12 +1335,60 @@ export default function AdminPage() {
                     <option value="cancelled">Closed / Rejected</option>
                   </select>
                 </div>
+
+                {/* PDF Batch Export Action Controls */}
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                  {selectedEnquiryIds.length > 0 ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "12.5px", color: "#8F7226", fontWeight: 700 }}>
+                        {selectedEnquiryIds.length} selected
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-gold"
+                        style={{ padding: "7px 14px", fontSize: "12.5px", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                        onClick={handleExportSelectedPDF}
+                        title="Download multi-enquiry consolidated batch PDF report"
+                      >
+                        <Download size={14} /> Export Selected ({selectedEnquiryIds.length}) PDF
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        style={{ padding: "7px 10px", fontSize: "12px" }}
+                        onClick={() => setSelectedEnquiryIds([])}
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-outline"
+                      style={{ padding: "7px 14px", fontSize: "12.5px", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                      onClick={handleExportAllVisiblePDF}
+                      title="Export all visible enquiries into a consolidated master PDF report"
+                    >
+                      <Download size={14} /> Export All ({filteredEnquiries.length}) as PDF
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="admin-table-container">
                 <table className="admin-table">
                   <thead>
                     <tr>
+                      <th style={{ width: "40px", textAlign: "center" }}>
+                        <input
+                          type="checkbox"
+                          aria-label="Select all enquiries"
+                          checked={filteredEnquiries.length > 0 && selectedEnquiryIds.length === filteredEnquiries.length}
+                          onChange={toggleSelectAllEnquiries}
+                          style={{ cursor: "pointer", width: "15px", height: "15px" }}
+                          title="Select / Deselect all visible enquiries"
+                        />
+                      </th>
                       <th>Reference ID</th>
                       <th>Secret PIN</th>
                       <th>Buyer Name</th>
@@ -1308,49 +1396,82 @@ export default function AdminPage() {
                       <th>Destination Port</th>
                       <th>Submitted On</th>
                       <th>Current Stage</th>
-                      <th>Action</th>
+                      <th style={{ minWidth: "180px" }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredEnquiries.map((enq) => (
-                      <tr key={enq.id}>
-                        <td>
-                          <span style={{ fontWeight: 800, color: "#8F7226", letterSpacing: "0.5px" }}>
-                            {enq.reference_id}
-                          </span>
-                        </td>
-                        <td>
-                          <span style={{ fontFamily: "monospace", color: "#8F7226", background: "rgba(201, 164, 81, 0.15)", padding: "2px 6px", borderRadius: "4px" }}>
-                            {enq.secret_pin}
-                          </span>
-                        </td>
-                        <td>
-                          <div style={{ fontWeight: 600, color: "var(--admin-text-main)" }}>{enq.buyer_name}</div>
-                          <div style={{ fontSize: "11px", color: "var(--admin-text-muted)" }}>{enq.email}</div>
-                        </td>
-                        <td>
-                          <div style={{ color: "var(--admin-text-main)" }}>{enq.company_name}</div>
-                          <div style={{ fontSize: "11px", color: "var(--admin-text-muted)" }}>{enq.tax_id}</div>
-                        </td>
-                        <td>{enq.destination_port || "—"}</td>
-                        <td>{enq.created_at}</td>
-                        <td>
-                          <span className={`status-badge status-${enq.status}`}>
-                            {enq.status_label || enq.status.toUpperCase()}
-                          </span>
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            className="btn btn-gold"
-                            style={{ padding: "5px 12px", fontSize: "12px", minHeight: "28px" }}
-                            onClick={() => handleOpenEnquiryDetail(enq)}
-                          >
-                            Manage Stage →
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredEnquiries.map((enq) => {
+                      const isSelected = selectedEnquiryIds.includes(enq.id);
+                      return (
+                        <tr key={enq.id} style={{ background: isSelected ? "rgba(201, 164, 81, 0.08)" : undefined }}>
+                          <td style={{ textAlign: "center" }}>
+                            <input
+                              type="checkbox"
+                              aria-label={`Select enquiry ${enq.reference_id}`}
+                              checked={isSelected}
+                              onChange={() => toggleSelectEnquiry(enq.id)}
+                              style={{ cursor: "pointer", width: "15px", height: "15px" }}
+                            />
+                          </td>
+                          <td>
+                            <span style={{ fontWeight: 800, color: "#8F7226", letterSpacing: "0.5px" }}>
+                              {enq.reference_id}
+                            </span>
+                          </td>
+                          <td>
+                            <span style={{ fontFamily: "monospace", color: "#8F7226", background: "rgba(201, 164, 81, 0.15)", padding: "2px 6px", borderRadius: "4px" }}>
+                              {enq.secret_pin}
+                            </span>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 600, color: "var(--admin-text-main)" }}>{enq.buyer_name}</div>
+                            <div style={{ fontSize: "11px", color: "var(--admin-text-muted)" }}>{enq.email}</div>
+                          </td>
+                          <td>
+                            <div style={{ color: "var(--admin-text-main)" }}>{enq.company_name}</div>
+                            <div style={{ fontSize: "11px", color: "var(--admin-text-muted)" }}>{enq.tax_id}</div>
+                          </td>
+                          <td>{enq.destination_port || "—"}</td>
+                          <td>{enq.created_at}</td>
+                          <td>
+                            <span className={`status-badge status-${enq.status}`}>
+                              {enq.status_label || enq.status.toUpperCase()}
+                            </span>
+                          </td>
+                          <td>
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                              <button
+                                type="button"
+                                className="btn btn-gold"
+                                style={{ padding: "5px 10px", fontSize: "11.5px", minHeight: "28px" }}
+                                onClick={() => handleOpenEnquiryDetail(enq)}
+                              >
+                                Manage Stage →
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-outline"
+                                style={{
+                                  padding: "5px 10px",
+                                  fontSize: "11.5px",
+                                  minHeight: "28px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "4px"
+                                }}
+                                onClick={() => {
+                                  exportSingleEnquiryPDF(enq);
+                                  triggerFeedback(`Exported PDF for ${enq.reference_id}`);
+                                }}
+                                title="Download official dossier PDF for this enquiry"
+                              >
+                                <Download size={13} /> PDF
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -1747,14 +1868,34 @@ export default function AdminPage() {
                   {selectedEnquiry.status.replace("_", " ").toUpperCase()}
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setSelectedEnquiry(null)}
-                style={{ background: "none", border: "none", color: "var(--admin-text-muted)", cursor: "pointer", padding: "4px" }}
-                title="Close modal"
-              >
-                <X size={20} />
-              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <button
+                  type="button"
+                  className="btn btn-gold"
+                  style={{
+                    padding: "6px 14px",
+                    fontSize: "12.5px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                  onClick={() => {
+                    exportSingleEnquiryPDF(selectedEnquiry);
+                    triggerFeedback(`Exported PDF for ${selectedEnquiry.reference_id}`);
+                  }}
+                  title="Download official PDF report for this enquiry"
+                >
+                  <Download size={14} /> Download PDF Dossier
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedEnquiry(null)}
+                  style={{ background: "none", border: "none", color: "var(--admin-text-muted)", cursor: "pointer", padding: "4px" }}
+                  title="Close modal"
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             <div className="admin-enquiry-modal-body">
